@@ -1,0 +1,45 @@
+module tb_t_flipflop;
+
+reg clk;
+reg reset;
+reg t;
+wire q;
+
+// Instantiate DUT
+t_flipflop uut (
+    .clk(clk),
+    .reset(reset),
+    .t(t),
+    .q(q)
+);
+
+// Clock generation
+always #5 clk = ~clk;
+
+initial begin
+    // Dump for waveform
+    $dumpfile("t_flipflop.vcd");
+    $dumpvars(0, tb_t_flipflop);
+
+    // Monitor values
+    $monitor("Time=%0t | clk=%b | reset=%b | t=%b | q=%b",
+              $time, clk, reset, t, q);
+
+    // Initialize
+    clk = 0;
+    reset = 1;
+    t = 0;
+
+    // Release reset
+    #5 reset = 0;
+
+    // Apply inputs
+    #10 t = 1;   // Toggle
+    #30 t = 0;   // Hold
+    #20 t = 1;   // Toggle again
+    #30 t = 0;
+
+    #40 $finish;
+end
+
+endmodule
